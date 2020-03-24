@@ -10,26 +10,15 @@ DrawingArea::DrawingArea(QWidget *parent) : QWidget(parent),
 
 }
 
+//加载文本接口
 void DrawingArea::load(QString text){
-
     elemVector=parser->ParseFrom(text);
-//    for(Element* it:elemVector){
-//        qDebug()<<it->Sentence();
-//    }
 }
 
 void DrawingArea::paintEvent(QPaintEvent *event){
 
     QPainter painter(this);
-//    QPen pen;
-//    pen.setColor(Qt::white);
-//    pen.setStyle(Qt::DashLine);
-//    painter.translate(width()/2,height()/2);
-//    painter.setPen(pen);
-//    pen.setWidth(5);
-//    painter.setRenderHint(QPainter::Antialiasing, true);
-//    //painter.setBrush(Qt::NoBrush);
-//    painter.drawLine(QPoint(0,0),QPoint(-50,50));
+
     for(Element* it:elemVector){
         qDebug()<<it->Sentence();
     }

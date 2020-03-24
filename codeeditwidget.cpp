@@ -140,11 +140,12 @@ void CodeEditWidget::loadFile(const QString &fileName){
 void CodeEditWidget::setCurrentFile(const QString &fileName){
     curFile = fileName;
     textEdit->document()->setModified(false);
-    setWindowModified(false);
+    //setWindowModified(false);
 
     QString shownName = curFile;
     if (curFile.isEmpty())
         shownName = "untitled.txt";
+
     //文件路径与窗口关联，指定路径设为文件名。
-    setWindowFilePath(shownName);
+    //setWindowFilePath(shownName);
 }

@@ -12,10 +12,10 @@ class DrawingArea : public QWidget
 public:
     explicit DrawingArea(QWidget *parent = nullptr);
     virtual void paintEvent(QPaintEvent *event)override;
+    void load(QString text);
 
 signals:
 public slots:
-    void load(QString text);
 
 private:
     void drawElement(QPainter& painter);

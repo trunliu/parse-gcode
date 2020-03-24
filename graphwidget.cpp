@@ -54,6 +54,5 @@ void GraphWidget::layOut(){
 
 void GraphWidget::loadText(QString text){
     drawingBoard->load(text);
-    //qDebug()<<text;
 }
 

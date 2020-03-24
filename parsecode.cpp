@@ -21,21 +21,17 @@ QVector<Element*> ParseCode::ParseFrom(const QString &textEdit){
         qDebug()<<"文件为空..."<<endl;
         return elemList;
     }
-    qDebug()<<"sentenceList.size:"<<sentenceList.size();
 
     //使用堆内存返回指针是正确的，但是注意可能产生内存泄露问题，在使用完毕后主函数中释放该段内存
     //遍历每一行并解析每一行
     for(int row=0;row<sentenceList.length();row++)
     {
-        //tmpElement=parseSentence(sentenceList[row]);
+        tmpElement=parseSentence(sentenceList[row]);
         if(tmpElement){
             elemList.push_back(tmpElement);
         }
     }
 
-    for(int i=0;i<elemList.size();++i){
-        qDebug()<<elemList[i]->Sentence();
-    }
     delete tmpElement;
     return elemList;
 }
@@ -72,7 +68,10 @@ Element* ParseCode::parseSentence(QString sentence){
     //根据指令类型更新状态信息，然后创建元素
     switch(CodeType(cmd))
     {
-        case G99_CODE:break;
+        case G99_CODE:{
+            *res=createNoShapeElement(sentence,status,lastPoint);
+            break;
+        }
         case RELATIVE_CODE:{
             status.isRelative=true;
             *res=createNoShapeElement(sentence,status,lastPoint);
@@ -143,6 +142,7 @@ Element* ParseCode::parseSentence(QString sentence){
             break;
        }default:{
            qDebug()<<"未知命令";
+           *res=createNoShapeElement(sentence,status,lastPoint);
            break;
        }
     }
