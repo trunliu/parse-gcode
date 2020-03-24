@@ -8,6 +8,13 @@ CodeEditWidget::CodeEditWidget(QWidget *parent) :
     connect(textEdit->document(), SIGNAL(contentsChanged()),this, SLOT(documentWasModified()));
 }
 
+void CodeEditWidget::sendText(){
+    if(!textEdit->toPlainText().isEmpty()){
+        emit sendText(textEdit->toPlainText());
+    }else{
+        return ;
+    }
+}
 
 void CodeEditWidget::open(){
     if (maybeSave()) {
@@ -115,10 +122,14 @@ void CodeEditWidget::loadFile(const QString &fileName){
         return;
     }
     QTextStream in(&file);
+
 #ifndef QT_NO_CURSOR
     QApplication::setOverrideCursor(Qt::WaitCursor);
 #endif
+
     textEdit->setPlainText(in.readAll());
+    //emit sendText(textEdit->toPlainText());
+
 #ifndef QT_NO_CURSOR
     QApplication::restoreOverrideCursor();
 #endif

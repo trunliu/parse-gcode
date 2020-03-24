@@ -1,26 +1,35 @@
 #ifndef GRAPHWIDGET_H
 #define GRAPHWIDGET_H
-
 #include <QWidget>
+#include <QPixmap>
+class QPlainTextEdit;
 class QScrollArea;
-class ParseCode;
+class QTabWidget;
+class Element;
+class DrawingArea;
+
+
 class GraphWidget : public QWidget
 {
     Q_OBJECT
 public:
     explicit GraphWidget(QWidget *parent = nullptr);
-    virtual void paintEvent(QPaintEvent *event) override;
+
+public slots:
+    void loadText(QString);
 
 private:
-    void drawElement();
-    void drawLine();
-    void drawArc();
+    void init();
+    void layOut();
+
 private:
+    //绘图界面包含的容器
     QScrollArea* scrollArea;
-    //输入
-    QString text;
-    //解析句柄
-    ParseCode* parser;
+    QTabWidget* tabWidget;
+
+    //绘图设备
+    DrawingArea* drawingBoard;
+
 };
 
 #endif // GRAPHWIDGET_H

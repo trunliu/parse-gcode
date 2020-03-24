@@ -10,8 +10,10 @@ public:
     explicit CodeEditWidget(QWidget *parent = nullptr);
 
 signals:
+    void sendText(QString);
 
 public slots:
+    void sendText();
     void newFile();
     void open();
     bool save();

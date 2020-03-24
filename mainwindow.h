@@ -12,7 +12,7 @@ class QMenu;
 class QStackedWidget;
 QT_END_NAMESPACE
 class CodeEditWidget;
-
+class GraphWidget;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -22,8 +22,6 @@ public:
     ~MainWindow();
 
 private slots:
-    void newFile();
-    void open();
 
 private:
     void createActions();
@@ -35,6 +33,7 @@ private:
     Ui::MainWindow *ui;
     QStackedWidget *stackedWidget;
     CodeEditWidget* codeEditWidget;
+    GraphWidget* graphWidget;
 };
 
 #endif // MAINWINDOW_H

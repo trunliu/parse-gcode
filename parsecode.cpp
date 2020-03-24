@@ -4,7 +4,6 @@
 
 //构造函数，用列表的方式对成员进行初始化
 ParseCode::ParseCode():text(" "),
-    elemList(QVector<Element*>(0)),
     sentenceList(QStringList(0))
 {                  
 //    QStatus status;
@@ -15,28 +14,35 @@ ParseCode::ParseCode():text(" "),
 //解析代码入口，返回element数组
 QVector<Element*> ParseCode::ParseFrom(const QString &textEdit){
     Element*tmpElement=NULL;
+    QVector<Element*> elemList;
 
     //预处理：将文本内容分割成一行一行的存入sentenceList列中
     if(!PreProcces(textEdit)){
         qDebug()<<"文件为空..."<<endl;
         return elemList;
     }
+    qDebug()<<"sentenceList.size:"<<sentenceList.size();
 
+    //使用堆内存返回指针是正确的，但是注意可能产生内存泄露问题，在使用完毕后主函数中释放该段内存
     //遍历每一行并解析每一行
     for(int row=0;row<sentenceList.length();row++)
     {
-        tmpElement=parseSentence(sentenceList[row]);
+        //tmpElement=parseSentence(sentenceList[row]);
         if(tmpElement){
             elemList.push_back(tmpElement);
         }
     }
+
+    for(int i=0;i<elemList.size();++i){
+        qDebug()<<elemList[i]->Sentence();
+    }
+    delete tmpElement;
     return elemList;
 }
 
 //预处理
 bool ParseCode::PreProcces(const QString &textEdit){
     this->text=textEdit;
-
     if(textEdit.size()){
         //去前后空格
         text=text.trimmed();
@@ -53,8 +59,9 @@ bool ParseCode::PreProcces(const QString &textEdit){
 }
 
 //解析一行代码，生成一个element对象
+//因为Element是纯虚函数，无法实例new出来，所以采用二重指针（指针的指针），res里放着指向Element的指针的地址
 Element* ParseCode::parseSentence(QString sentence){
-    Element*res=NULL;
+    Element** res=new Element*;
 
     //每一行进行预处理,两头去空格
     sentence=sentence.trimmed();
@@ -68,71 +75,71 @@ Element* ParseCode::parseSentence(QString sentence){
         case G99_CODE:break;
         case RELATIVE_CODE:{
             status.isRelative=true;
-            res=createNoShapeElement(sentence,status,lastPoint);
+            *res=createNoShapeElement(sentence,status,lastPoint);
             break;
        }
         case ABSOLUTE_CODE:{
             status.isRelative=false;
-            res=createNoShapeElement(sentence,status,lastPoint);
+            *res=createNoShapeElement(sentence,status,lastPoint);
             break;
        }
         case INCH_CODE:{
             status.isMeter=true;
-            res=createNoShapeElement(sentence,status,lastPoint);
+            *res=createNoShapeElement(sentence,status,lastPoint);
             break;
        }
         case METER_CODE:{
             status.isMeter=false;
-            res=createNoShapeElement(sentence,status,lastPoint);
+            *res=createNoShapeElement(sentence,status,lastPoint);
             break;
        }
         case L_KERF_CODE:{
             status.isLeft=1;
-            res=createNoShapeElement(sentence,status,lastPoint);
+            *res=createNoShapeElement(sentence,status,lastPoint);
             break;
        }
         case R_KERF_CODE:{
             status.isLeft=0;
-            res=createNoShapeElement(sentence,status,lastPoint);
+            *res=createNoShapeElement(sentence,status,lastPoint);
             break;
        }
         case CANCEL_KERF_CODE:{
             status.isLeft=-1;
-            res=createNoShapeElement(sentence,status,lastPoint);
+            *res=createNoShapeElement(sentence,status,lastPoint);
             break;
        }
         case FIRE_ON_CODE:{
             status.isFire=true;
-            res=createNoShapeElement(sentence,status,lastPoint);
+            *res=createNoShapeElement(sentence,status,lastPoint);
             break;
        }
         case FIRE_OFF_CODE:{
             status.isFire=false;
-            res=createNoShapeElement(sentence,status,lastPoint);
+            *res=createNoShapeElement(sentence,status,lastPoint);
             break;
        }
         case FINISH_CODE:{
-            res=createNoShapeElement(sentence,status,lastPoint);
+            *res=createNoShapeElement(sentence,status,lastPoint);
             break;
        }
         case QUICK_LINE_CODE:{
             status.isQuickLine=true;
-            res=createLineElement(sentence,status,lastPoint);
+            *res=createLineElement(sentence,status,lastPoint);
             break;
        }
         case LINE_CODE:{
             status.isQuickLine=false;
-            res=createLineElement(sentence,status,lastPoint);
+            *res=createLineElement(sentence,status,lastPoint);
             break;
        }
         case ACW_ARC_CODE:{
             status.isAcw=1;
-            res=createArcElement(sentence,status,lastPoint);
+            *res=createArcElement(sentence,status,lastPoint);
             break;
        }
         case CW_ARC_CODE:{
             status.isAcw=0;
-            res=createArcElement(sentence,status,lastPoint);
+            *res=createArcElement(sentence,status,lastPoint);
             break;
        }default:{
            qDebug()<<"未知命令";
@@ -141,11 +148,10 @@ Element* ParseCode::parseSentence(QString sentence){
     }
 
     //如果是图元类则将此元素的终点记录下来，作为下一个元素的起点使用
-    if(res->isShape()){
-        lastPoint=static_cast<Shape*>(res)->End();
+    if((*res)->isShape()){
+        lastPoint=static_cast<Shape*>(*res)->End();
     }
-
-    return res;
+    return *res;
 }
 
 //获取命令类型
@@ -230,7 +236,9 @@ Element* ParseCode::createLineElement(QString sentence,QStatus status,QPoint las
 
 //创建弧元素
 Element* ParseCode::createArcElement(QString sentence,QStatus status,QPoint lastPoint){
-return NULL;
+    Arc* res=new Arc;
+
+    return res;
 }
 
 

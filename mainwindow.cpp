@@ -7,16 +7,12 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    codeEditWidget(new CodeEditWidget)
+    codeEditWidget(new CodeEditWidget),
+    graphWidget(new GraphWidget)
 {
-
-//GraphWidget*graphWidget=new GraphWidget;
-//stackedWidget->addWidget(graphWidget);
-//stackedWidget->setCurrentWidget(0);
-
+    setLayout();
     createActions();
     createStatusBar();
-    setLayout();
 }
 
 MainWindow::~MainWindow()
@@ -37,8 +33,8 @@ void MainWindow::setLayout()
     resize(1442,900);
 
     //将centerWidget插入mainWindow中心
-    //CodeEditWidget* codeEditWidget=new CodeEditWidget;
-    setCentralWidget(codeEditWidget->textEdit);
+    //setCentralWidget(codeEditWidget->textEdit);
+    setCentralWidget(graphWidget);
 
 }
 
@@ -47,6 +43,7 @@ void MainWindow::createActions()
 {
     //创建一个文件菜单栏，两个工具栏
     QMenu *fileMenu = menuBar()->addMenu(tr("&File"));
+    QMenu *graphMenu = menuBar()->addMenu(tr("&Graph"));
     QToolBar *fileToolBar = addToolBar(tr("File"));
     QToolBar *toolBar = addToolBar(tr("action"));
 
@@ -83,51 +80,29 @@ void MainWindow::createActions()
     saveAsAct->setShortcuts(QKeySequence::SaveAs);
     saveAsAct->setStatusTip(tr("Save the document under a new name"));
 
+    //在代码编辑界面open一个文件时，将其文件内容同时发送给绘图界面解析。
+    //QObject::connect(codeEditWidget,SIGNAL(sendText(QString)),graphWidget,SLOT(ParseGCodeSlot(QString)));
 
-    //设置开始解析动作
+    //设置开始解析动作，点击解析动作后，将代码编辑界面的内容发送给绘图界面
     const QIcon stratIcon=QIcon::fromTheme("document-open",QIcon(":/image/images/paste.png"));
     QAction *startAct=new QAction(stratIcon,tr("&Start"),this);
     openAct->setStatusTip(tr("Begin to Parse the Gcode"));
-//    QObject::connect(startAct,SIGNAL(triggered()),stackedWidget,SLOT(render()));
-//    QObject::connect(startAct,SIGNAL(triggered()),stackedWidget,SLOT(showOnStatusInfo()));
-    fileMenu->addAction(startAct);
+    //点击开始按钮，代码编辑界面发送文本内容
+    QObject::connect(startAct,SIGNAL(triggered()),codeEditWidget,SLOT(sendText()));
+    //绘图界面加载内容
+    QObject::connect(codeEditWidget,SIGNAL(sendText(QString)),graphWidget,SLOT(loadText(QString)));
+    graphMenu->addAction(startAct);
     toolBar->addAction(startAct);
 
+    //设置开始绘图动作
+    const QIcon graphIcon=QIcon::fromTheme("document-open",QIcon(":/image/images/paste.png"));
+    QAction *graphAct=new QAction(graphIcon,tr("&Graph"),this);
+    graphAct->setStatusTip(tr("Begin to Graph"));
+    QObject::connect(graphAct,SIGNAL(triggered()),graphWidget,SLOT(update()));
+    graphMenu->addAction(graphAct);
+    toolBar->addAction(graphAct);
     return;
 }
 
-void MainWindow::newFile()
-{
-    return ;
-}
 
 
-void MainWindow::open()
-{
-    QString fileName = QFileDialog::getOpenFileName(this);
-    if (!fileName.isEmpty()){
-        loadFile(fileName);
-    }
-}
-
-void MainWindow::loadFile(const QString &fileName)
-{
-    QFile file(fileName);
-    if (!file.open(QFile::ReadOnly | QFile::Text)) {
-        QMessageBox::warning(this, tr("Application"),
-                             tr("Cannot read file %1:\n%2.")
-                             .arg(QDir::toNativeSeparators(fileName), file.errorString()));
-        return;
-    }
-
-    QTextStream in(&file);
-#ifndef QT_NO_CURSOR
-    QApplication::setOverrideCursor(Qt::WaitCursor);
-#endif
-    //centerWidget->getCodeTextEdit()->setPlainText(in.readAll());
-#ifndef QT_NO_CURSOR
-    QApplication::restoreOverrideCursor();
-#endif
-
-    statusBar()->showMessage(tr("File loaded"), 2000);
-}

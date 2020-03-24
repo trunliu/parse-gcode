@@ -3,64 +3,57 @@
 #include "parsecode.h"
 #include "element.h"
 #include "commonfunc.h"
-GraphWidget::GraphWidget(QWidget *parent) : QWidget(parent),parser(new ParseCode)
+#include "drawingarea.h"
+
+GraphWidget::GraphWidget(QWidget *parent) : QWidget(parent),
+    scrollArea(new QScrollArea),
+    tabWidget(new QTabWidget),
+    drawingBoard(new DrawingArea)
 {
+    init();
+    layOut();
+}
+
+void GraphWidget::init(){
+    //必须设置运行时自动填冲
+    drawingBoard->setAutoFillBackground(true);
+
+    //获取drawingBoard的调色面板,设置成黑色
+    QPalette palette=drawingBoard->palette();
+    palette.setColor(QPalette::Window,Qt::black);
+    drawingBoard->setPalette(palette);
+
+    //QWidget必须初始化一个大小，否则不显示
+    drawingBoard->resize(1440,800);
+
+    //在srollArea容器中添加QWidget
+    scrollArea->setWidget(drawingBoard);
+}
+
+void GraphWidget::layOut(){
+    //使用格栅布局
+    QGridLayout* gridLayout=new QGridLayout(this);
+
+    //tabWidget放入第0行第0列，scrollArea放入第0行第1列
+    gridLayout->addWidget(tabWidget,0,0);
+    gridLayout->addWidget(scrollArea,0,1);
+
+    //第0列比例系数为1，第1列比例系数为4，实现宽比1：4
+    gridLayout->setColumnStretch(0,1);
+    gridLayout->setColumnStretch(1,4);
+
+    //设置水平、垂直、以及边缘边距为10
+    gridLayout->setHorizontalSpacing(10);
+    gridLayout->setVerticalSpacing(10);
+    gridLayout->setContentsMargins(10,10,10,10);
+
+    //启动布局
+    setLayout(gridLayout);
 
 }
 
-void GraphWidget::paintEvent(QPaintEvent *event){
-
+void GraphWidget::loadText(QString text){
+    drawingBoard->load(text);
+    //qDebug()<<text;
 }
 
-void GraphWidget::drawElement(){
-    QVector<Element*> elemVector=parser->ParseFrom(text);
-
-    QPen pen;
-    //it为迭代器
-    for(Element* it:elemVector){
-        //如果是图元类
-        if(it->isShape()){
-            //根据元素状态设置画笔颜色类型
-            if(it->Status().isQuickLine){
-                pen.setColor(Qt::white);
-                pen.setStyle(Qt::DashLine);
-            }else{
-                if(it->Status().isFire){
-                    pen.setColor(Qt::red);
-                    pen.setStyle(Qt::SolidLine);
-                }else{
-                    pen.setColor(Qt::green);
-                    pen.setStyle(Qt::SolidLine);
-                }
-            }
-
-
-            QPoint start,end,centre;
-            //设置起点终点
-            start=dynamic_cast<Shape*>(it)->Start();
-            end=dynamic_cast<Shape*>(it)->End();
-            //如果是弧线还要设置圆心
-//            if(dynamic_cast<Shape*>(it)->isArc()){
-//                centre=dynamic_cast<Arc*>(elemVector[i])->Centre();
-//            }
-
-            //绘制
-            QPainter painter(this);
-            painter.translate(width()/2,height()/2);
-            painter.setPen(pen);
-            pen.setWidth(3);
-            painter.setRenderHint(QPainter::Antialiasing, true);
-            painter.setBrush(Qt::NoBrush);
-            painter.drawLine(start,-end);
-        }
-    }
-    update();
-}
-
-void GraphWidget::drawLine(){
-
-}
-
-void GraphWidget::drawArc(){
-
-}

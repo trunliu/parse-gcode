@@ -35,11 +35,10 @@ private:
 
 private:
     QString text;                   //输入文本的内容
-    QVector<Element*> elemList;     //输出元素数组
-    QStringList sentenceList;       //输入文本的内容按行分解成行列表
 
-    QStatus status;                 //记录上一节末点坐标
-    QPoint lastPoint;
+    QStringList sentenceList;       //输入文本的内容按行分解成行列表
+    QStatus status;
+    QPoint lastPoint;               //记录上一节末点坐标
 };
 
 #endif // PARSECODE_H

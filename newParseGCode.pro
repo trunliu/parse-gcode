@@ -30,7 +30,8 @@ SOURCES += \
     element.cpp \
     parsecode.cpp \
     codeeditwidget.cpp \
-    graphwidget.cpp
+    graphwidget.cpp \
+    drawingarea.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -38,7 +39,8 @@ HEADERS += \
     element.h \
     parsecode.h \
     codeeditwidget.h \
-    graphwidget.h
+    graphwidget.h \
+    drawingarea.h
 
 FORMS += \
         mainwindow.ui

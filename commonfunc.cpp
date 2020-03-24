@@ -1,5 +1,5 @@
 #include "commonfunc.h"
-
+#include <QDebug>
 commonFunc::commonFunc()
 {
 
@@ -8,6 +8,6 @@ commonFunc::commonFunc()
 
 QStringList commonFunc::splitBy(QString text,QString ch){
     QStringList res;
-    text.split(ch);
+    res=text.split(ch);
     return res;
 }
