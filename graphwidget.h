@@ -16,8 +16,8 @@ public:
     explicit GraphWidget(QWidget *parent = nullptr);
 
 public slots:
-    void loadText(QString);
-
+    void loadTextSlot(QString);
+    void graphSlot();
 private:
     void init();
     void layOut();

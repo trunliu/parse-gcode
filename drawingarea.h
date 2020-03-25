@@ -18,9 +18,9 @@ signals:
 public slots:
 
 private:
-    void drawElement(QPainter& painter);
-    void drawLine(QPainter &painter,QPen pen,Element* it);
-    void drawArc(QPainter &painter,QPen pen,Element* it);
+    void drawElement(QPainter& painter,QPen& pen);
+    void drawLine(QPainter& painter,QPen& pen,Element* it);
+    void drawArc(QPainter& painter,QPen& pen,Element* it);
 
 private:
     //解析用的句柄

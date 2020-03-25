@@ -27,12 +27,15 @@ QVector<Element*> ParseCode::ParseFrom(const QString &textEdit){
     for(int row=0;row<sentenceList.length();row++)
     {
         tmpElement=parseSentence(sentenceList[row]);
+
         if(tmpElement){
             elemList.push_back(tmpElement);
         }
     }
 
-    delete tmpElement;
+    //删除这句就能解决使用纯虚函数的bug？？？
+    //delete tmpElement;
+
     return elemList;
 }
 
@@ -58,6 +61,7 @@ bool ParseCode::PreProcces(const QString &textEdit){
 //因为Element是纯虚函数，无法实例new出来，所以采用二重指针（指针的指针），res里放着指向Element的指针的地址
 Element* ParseCode::parseSentence(QString sentence){
     Element** res=new Element*;
+    if(sentence.isEmpty())return NULL;
 
     //每一行进行预处理,两头去空格
     sentence=sentence.trimmed();

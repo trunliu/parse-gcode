@@ -90,7 +90,7 @@ void MainWindow::createActions()
     //点击开始按钮，代码编辑界面发送文本内容
     QObject::connect(startAct,SIGNAL(triggered()),codeEditWidget,SLOT(sendText()));
     //绘图界面加载内容
-    QObject::connect(codeEditWidget,SIGNAL(sendText(QString)),graphWidget,SLOT(loadText(QString)));
+    QObject::connect(codeEditWidget,SIGNAL(sendText(QString)),graphWidget,SLOT(loadTextSlot(QString)));
     graphMenu->addAction(startAct);
     toolBar->addAction(startAct);
 
@@ -98,7 +98,7 @@ void MainWindow::createActions()
     const QIcon graphIcon=QIcon::fromTheme("document-open",QIcon(":/image/images/paste.png"));
     QAction *graphAct=new QAction(graphIcon,tr("&Graph"),this);
     graphAct->setStatusTip(tr("Begin to Graph"));
-    QObject::connect(graphAct,SIGNAL(triggered()),graphWidget,SLOT(update()));
+    QObject::connect(graphAct,SIGNAL(triggered()),graphWidget,SLOT(graphSlot()));
     graphMenu->addAction(graphAct);
     toolBar->addAction(graphAct);
     return;

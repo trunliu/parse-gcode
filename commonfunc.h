@@ -21,6 +21,7 @@ enum CodeType{
     FIRE_OFF_CODE,FINISH_CODE,NO_USE_CODE,
 };
 
+class QPoint;
 //公共函数类
 class commonFunc
 {
@@ -29,6 +30,8 @@ public:
 public:
     //根据字符串ch分段
     static QStringList splitBy(QString text,QString ch);
+    //将坐标值沿x轴反转处理
+    static void reversePointByX_Axis(QPoint& point);
 };
 
 #endif // COMMONFUNC_H

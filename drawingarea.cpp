@@ -15,33 +15,30 @@ void DrawingArea::load(QString text){
     elemVector=parser->ParseFrom(text);
 }
 
+//QPainter的使用必须paintEvent函数中，否则报错
 void DrawingArea::paintEvent(QPaintEvent *event){
 
     QPainter painter(this);
+    QPen pen;
+    painter.translate(this->width()/2,this->height()/2);
 
-    for(Element* it:elemVector){
-        qDebug()<<it->Sentence();
+    if(!elemVector.isEmpty()){
+        drawElement(painter,pen);
     }
 
-    drawElement(painter);
-
-    qDebug()<<"DrawingArea::paintEvent";
 }
 
-
-void DrawingArea::drawElement(QPainter& painter){
-    QPen pen;
-    qDebug()<<"DrawingArea::drawElement";
+void DrawingArea::drawElement(QPainter& painter,QPen& pen){
     //it为迭代器
     for(Element* it:elemVector){
-        //如果是图元类
-        if(it->isShape()){
+        //如果是图元类,使用多态
+        if((it)->isShape()){
             //根据元素状态设置画笔颜色和类型
-            if(it->Status().isQuickLine){
+            if((it)->Status().isQuickLine){
                 pen.setColor(Qt::white);
                 pen.setStyle(Qt::DashLine);
             }else{
-                if(it->Status().isFire){
+                if((it)->Status().isFire){
                     pen.setColor(Qt::red);
                     pen.setStyle(Qt::SolidLine);
                 }else{
@@ -61,25 +58,33 @@ void DrawingArea::drawElement(QPainter& painter){
     }
 }
 
-void DrawingArea::drawLine(QPainter &painter,QPen pen,Element* it){
-    qDebug()<<"drawLine";
+void DrawingArea::drawLine(QPainter& painter,QPen& pen,Element* it){
     QPoint start,end;
     start=dynamic_cast<Shape*>(it)->Start();
     end=dynamic_cast<Shape*>(it)->End();
-    painter.translate(width()/2,height()/2);
+
+    qDebug()<<it->Sentence();
+    qDebug()<<tr("[%1,%2] [%3,%4]").arg(start.x()).arg(start.y()).arg(end.x()).arg(end.y());
+
     painter.setPen(pen);
     pen.setWidth(3);
     painter.setRenderHint(QPainter::Antialiasing, true);
     painter.setBrush(Qt::NoBrush);
-    painter.drawLine(start,-end);
+
+    //因为画图界面的y轴正方向与坐标轴y轴方向刚好相反，所以将坐标沿x轴做反转处理
+    commonFunc::reversePointByX_Axis(start);
+    commonFunc::reversePointByX_Axis(end);
+    painter.drawLine(start,end);
 }
 
-void DrawingArea::drawArc(QPainter &painter,QPen pen,Element* it){
+void DrawingArea::drawArc(QPainter &painter,QPen &pen,Element* it){
     QPoint start,end,centre;
-    //如果是弧线还要设置圆心
-//            if(dynamic_cast<Shape*>(it)->isArc()){
-//                centre=dynamic_cast<Arc*>(elemVector[i])->Centre();
-//            }
-
+    start=dynamic_cast<Shape*>(it)->Start();
+    end=dynamic_cast<Shape*>(it)->End();
+    //centre=dynamic_cast<Arc*>(it)->Centre();
+    painter.setPen(pen);
+    pen.setWidth(3);
+    painter.setRenderHint(QPainter::Antialiasing, true);
+    painter.setBrush(Qt::NoBrush);
 }
 

@@ -19,12 +19,17 @@ void GraphWidget::init(){
     drawingBoard->setAutoFillBackground(true);
 
     //获取drawingBoard的调色面板,设置成黑色
-    QPalette palette=drawingBoard->palette();
-    palette.setColor(QPalette::Window,Qt::black);
-    drawingBoard->setPalette(palette);
+    QPalette palette1=drawingBoard->palette();
+    palette1.setColor(QPalette::Window,Qt::black);
+    drawingBoard->setPalette(palette1);
 
     //QWidget必须初始化一个大小，否则不显示
-    drawingBoard->resize(1440,800);
+    drawingBoard->resize(800,600);
+
+    //获取scrollArea的调色面板,设置成黑色
+    QPalette palette2=scrollArea->palette();
+    palette2.setColor(QPalette::Window,Qt::darkGray);
+    scrollArea->setPalette(palette2);
 
     //在srollArea容器中添加QWidget
     scrollArea->setWidget(drawingBoard);
@@ -52,7 +57,10 @@ void GraphWidget::layOut(){
 
 }
 
-void GraphWidget::loadText(QString text){
+void GraphWidget::loadTextSlot(QString text){
     drawingBoard->load(text);
 }
 
+void GraphWidget::graphSlot(){
+    drawingBoard->update();
+}
