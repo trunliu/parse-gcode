@@ -17,3 +17,9 @@ QStringList commonFunc::splitBy(QString text,QString ch){
 void commonFunc::reversePointByX_Axis(QPoint &point){
     point.ry()=-point.y();
 }
+
+
+void commonFunc::expandPointByScale(QPoint& point,double scale){
+    point.rx()=point.x()*scale;
+    point.ry()=point.y()*scale;
+}

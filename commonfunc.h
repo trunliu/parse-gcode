@@ -32,6 +32,8 @@ public:
     static QStringList splitBy(QString text,QString ch);
     //将坐标值沿x轴反转处理
     static void reversePointByX_Axis(QPoint& point);
+    //将坐标值按scale比例系数进行放缩
+    static void expandPointByScale(QPoint& point,double scale);
 };
 
 #endif // COMMONFUNC_H

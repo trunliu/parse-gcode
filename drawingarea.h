@@ -12,6 +12,7 @@ class DrawingArea : public QWidget
 public:
     explicit DrawingArea(QWidget *parent = nullptr);
     virtual void paintEvent(QPaintEvent *event)override;
+    virtual void wheelEvent(QWheelEvent *event)override;
     void load(QString text);
 
 signals:
@@ -22,12 +23,17 @@ private:
     void drawLine(QPainter& painter,QPen& pen,Element* it);
     void drawArc(QPainter& painter,QPen& pen,Element* it);
 
+    void zoomIn();
+    void zoomOut();
 private:
     //解析用的句柄
     ParseCode* parser;
 
     //解析后的element容器
     QVector<Element*> elemVector;
+
+    //放大缩小的比例系数
+    double scale;
 };
 
 #endif // DRAWINGAREA_H

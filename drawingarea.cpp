@@ -2,10 +2,12 @@
 #include <QtWidgets>
 #include "element.h"
 #include "parsecode.h"
+#include <QMouseEvent>
 
 DrawingArea::DrawingArea(QWidget *parent) : QWidget(parent),
     parser(new ParseCode),
-    elemVector(0)
+    elemVector(0),
+    scale(1)
 {
 
 }
@@ -26,6 +28,25 @@ void DrawingArea::paintEvent(QPaintEvent *event){
         drawElement(painter,pen);
     }
 
+}
+
+//鼠标滑轮事件函数
+void DrawingArea::wheelEvent(QWheelEvent *event){
+    // 当滚轮远离使用者时delta值为滚动的角度默认一下15°
+    if(event->delta()>0){
+        zoomOut();
+    }else{//当滚轮向使用者方向旋转时
+        zoomIn();
+    }
+}
+
+void DrawingArea::zoomOut(){
+    scale+=0.2;
+    update();
+}
+void DrawingArea::zoomIn(){
+    scale-=0.2;
+    update();
 }
 
 void DrawingArea::drawElement(QPainter& painter,QPen& pen){
@@ -74,6 +95,10 @@ void DrawingArea::drawLine(QPainter& painter,QPen& pen,Element* it){
     //因为画图界面的y轴正方向与坐标轴y轴方向刚好相反，所以将坐标沿x轴做反转处理
     commonFunc::reversePointByX_Axis(start);
     commonFunc::reversePointByX_Axis(end);
+    //按照比例系数进行调整
+    commonFunc::expandPointByScale(start,scale);
+    commonFunc::expandPointByScale(end,scale);
+
     painter.drawLine(start,end);
 }
 
