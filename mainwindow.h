@@ -10,9 +10,11 @@ QT_BEGIN_NAMESPACE
 class QAction;
 class QMenu;
 class QStackedWidget;
+class QListWidget;
 QT_END_NAMESPACE
 class CodeEditWidget;
 class GraphWidget;
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -31,7 +33,9 @@ private:
 
 private:
     Ui::MainWindow *ui;
+    QListWidget* listWidget;
     QStackedWidget *stackedWidget;
+    QWidget* centreWidget;
     CodeEditWidget* codeEditWidget;
     GraphWidget* graphWidget;
 };

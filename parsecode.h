@@ -19,7 +19,7 @@ private:
     Element* parseSentence(QString sentence);
 
     //预处理
-    bool PreProcces(const QString &textEdit);
+    bool PreProcces(const QString& textEdit);
 
     //获取命令类型
     enum CodeType CodeType(const QString &cmd);

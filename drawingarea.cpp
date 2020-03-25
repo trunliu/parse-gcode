@@ -3,31 +3,54 @@
 #include "element.h"
 #include "parsecode.h"
 #include <QMouseEvent>
+#include <QMessageBox>
+QPoint mousePressPos(0,0);
+double xoff=0,yoff=0;
 
 DrawingArea::DrawingArea(QWidget *parent) : QWidget(parent),
     parser(new ParseCode),
     elemVector(0),
+    receiveData(0),
     scale(1)
 {
 
 }
 
-//加载文本接口
-void DrawingArea::load(QString text){
-    elemVector=parser->ParseFrom(text);
+void DrawingArea::receiveElemVector(QVector<Element*> elemVector){
+    receiveData=elemVector;
 }
+
+//将接受的数据加载到元素数组elemVector，就会自动画图
+void DrawingArea::loadElemVector(){
+    this->elemVector=receiveData;
+}
+
 
 //QPainter的使用必须paintEvent函数中，否则报错
 void DrawingArea::paintEvent(QPaintEvent *event){
-
+    Q_UNUSED(event);
     QPainter painter(this);
     QPen pen;
     painter.translate(this->width()/2,this->height()/2);
+
+    //绘制坐标轴
+    drawAxis(painter,pen);
 
     if(!elemVector.isEmpty()){
         drawElement(painter,pen);
     }
 
+}
+
+void DrawingArea::drawAxis(QPainter &painter,QPen &pen){
+    pen.setColor(Qt::gray);
+    pen.setStyle(Qt::SolidLine);
+    pen.setWidth(1);
+    painter.setPen(pen);
+    painter.setRenderHint(QPainter::Antialiasing, true);
+    painter.setBrush(Qt::NoBrush);
+    painter.drawLine(QPoint(0,-height()/2),QPoint(0,height()/2));
+    painter.drawLine(QPoint(-width()/2,0),QPoint(width()/2,0));
 }
 
 //鼠标滑轮事件函数
@@ -47,6 +70,21 @@ void DrawingArea::zoomOut(){
 void DrawingArea::zoomIn(){
     scale-=0.2;
     update();
+}
+
+
+void DrawingArea::mousePressEvent(QMouseEvent *event){
+    //记录鼠标按下的坐标
+    mousePressPos=event->pos();
+}
+
+void DrawingArea::mouseMoveEvent(QMouseEvent *event){
+     //计算鼠标移动后的坐标与之前按下鼠标的坐标偏移量
+     if(event->buttons() & Qt::LeftButton){
+         xoff=(event->x()- mousePressPos.x());
+         yoff=(event->y()- mousePressPos.y());
+         update();
+     }
 }
 
 void DrawingArea::drawElement(QPainter& painter,QPen& pen){
@@ -84,9 +122,6 @@ void DrawingArea::drawLine(QPainter& painter,QPen& pen,Element* it){
     start=dynamic_cast<Shape*>(it)->Start();
     end=dynamic_cast<Shape*>(it)->End();
 
-    qDebug()<<it->Sentence();
-    qDebug()<<tr("[%1,%2] [%3,%4]").arg(start.x()).arg(start.y()).arg(end.x()).arg(end.y());
-
     painter.setPen(pen);
     pen.setWidth(3);
     painter.setRenderHint(QPainter::Antialiasing, true);
@@ -98,6 +133,9 @@ void DrawingArea::drawLine(QPainter& painter,QPen& pen,Element* it){
     //按照比例系数进行调整
     commonFunc::expandPointByScale(start,scale);
     commonFunc::expandPointByScale(end,scale);
+    //按照鼠标拉动进行调整
+    commonFunc::expandPointByScale(start,xoff,yoff);
+    commonFunc::expandPointByScale(end,xoff,yoff);
 
     painter.drawLine(start,end);
 }
@@ -113,3 +151,8 @@ void DrawingArea::drawArc(QPainter &painter,QPen &pen,Element* it){
     painter.setBrush(Qt::NoBrush);
 }
 
+void DrawingArea::clean(){
+    if(!elemVector.isEmpty()){
+        elemVector={};
+    }
+}

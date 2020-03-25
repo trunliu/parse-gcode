@@ -1,23 +1,31 @@
 #ifndef CODEEDITWIDGET_H
 #define CODEEDITWIDGET_H
-#include <QPlainTextEdit>
 #include <QWidget>
 
+class QPlainTextEdit;
+class ParseCode;
+class Element;
 class CodeEditWidget : public QWidget
 {
     Q_OBJECT
 public:
     explicit CodeEditWidget(QWidget *parent = nullptr);
 
-signals:
-    void sendText(QString);
-
 public slots:
-    void sendText();
+    //发送信号sendText(QString)的槽函数
+    void parseCodeAndSendText();
+
+    //新建、打开、保存、另存为槽函数
     void newFile();
     void open();
     bool save();
     bool saveAs();
+
+signals:
+    void sendElemVector(QVector<Element*>);
+
+private slots:
+    //如果编辑区内容改变，则调用该槽
     void documentWasModified();
 
 private:
@@ -33,7 +41,11 @@ private:
     //设置当前文件名
     void setCurrentFile(const QString &fileName);
 
-public:
+private:
+    //解析用的句柄
+    ParseCode* parser;
+
+    //记录文本内容
     QPlainTextEdit* textEdit;
 
     //用于记录当前文件名

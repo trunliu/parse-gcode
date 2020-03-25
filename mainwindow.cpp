@@ -3,12 +3,16 @@
 #include <QtWidgets>
 #include "graphwidget.h"
 #include "codeeditwidget.h"
+#include <QListWidget>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
+    listWidget(new QListWidget),
+    stackedWidget(new QStackedWidget),
     codeEditWidget(new CodeEditWidget),
-    graphWidget(new GraphWidget)
+    graphWidget(new GraphWidget),
+    centreWidget(new QWidget)
 {
     setLayout();
     createActions();
@@ -32,9 +36,37 @@ void MainWindow::setLayout()
     //初始化窗口大小
     resize(1442,900);
 
+//    //设置列表窗口
+//    listWidget->insertItem(0,tr("window1"));
+//    listWidget->insertItem(1,tr("window2"));
+
+//    //设置堆栈窗口
+//    stackedWidget->addWidget(codeEditWidget);
+//    stackedWidget->addWidget(graphWidget);
+
+//    //设置主窗口布局
+//    QGridLayout* gridLayout=new QGridLayout;
+//    gridLayout->addWidget(listWidget,0,0);
+//    gridLayout->addWidget(stackedWidget,0,1);
+
+//    //设置所占比例1：6
+//    gridLayout->setColumnStretch(0,1);
+//    gridLayout->setColumnStretch(1,6);
+
+//    //设置水平、垂直、以及边缘边距为10
+//    gridLayout->setHorizontalSpacing(10);
+//    gridLayout->setVerticalSpacing(10);
+//    gridLayout->setContentsMargins(10,10,10,10);
+
+//    connect(listWidget,SIGNAL(currentRowChanged(int)),stackedWidget,SLOT(setCurrentIndex(int)));
+
+
     //将centerWidget插入mainWindow中心
     //setCentralWidget(codeEditWidget->textEdit);
     setCentralWidget(graphWidget);
+
+    //启动布局
+    //setLayout(gridLayout);
 
 }
 
@@ -65,7 +97,7 @@ void MainWindow::createActions()
     fileMenu->addAction(openAct);
     fileToolBar->addAction(openAct);
 
-    //设保存动作
+    //设置保存动作
     const QIcon saveIcon = QIcon::fromTheme("document-save", QIcon(":/image/images/new.png"));
     QAction *saveAct = new QAction(saveIcon, tr("&Save"), this);
     saveAct->setShortcuts(QKeySequence::Save);
@@ -80,17 +112,14 @@ void MainWindow::createActions()
     saveAsAct->setShortcuts(QKeySequence::SaveAs);
     saveAsAct->setStatusTip(tr("Save the document under a new name"));
 
-    //在代码编辑界面open一个文件时，将其文件内容同时发送给绘图界面解析。
-    //QObject::connect(codeEditWidget,SIGNAL(sendText(QString)),graphWidget,SLOT(ParseGCodeSlot(QString)));
-
-    //设置开始解析动作，点击解析动作后，将代码编辑界面的内容发送给绘图界面
+    //设置开始解析动作
     const QIcon stratIcon=QIcon::fromTheme("document-open",QIcon(":/image/images/paste.png"));
     QAction *startAct=new QAction(stratIcon,tr("&Start"),this);
     openAct->setStatusTip(tr("Begin to Parse the Gcode"));
-    //点击开始按钮，代码编辑界面发送文本内容
-    QObject::connect(startAct,SIGNAL(triggered()),codeEditWidget,SLOT(sendText()));
-    //绘图界面加载内容
-    QObject::connect(codeEditWidget,SIGNAL(sendText(QString)),graphWidget,SLOT(loadTextSlot(QString)));
+    //点击开始按钮，代码编辑界面解析代码生成elemVector数组，解析成功窗口提示信息。并发送elemVector数组至graphWidget界面
+    QObject::connect(startAct,SIGNAL(triggered()),codeEditWidget,SLOT(parseCodeAndSendText()));
+    //绘图界面接受代码编辑界面发送的elemVector数组
+    QObject::connect(codeEditWidget,SIGNAL(sendElemVector(QVector<Element*>)),graphWidget,SLOT(receiveElemVector(QVector<Element*>)));
     graphMenu->addAction(startAct);
     toolBar->addAction(startAct);
 
@@ -98,9 +127,18 @@ void MainWindow::createActions()
     const QIcon graphIcon=QIcon::fromTheme("document-open",QIcon(":/image/images/paste.png"));
     QAction *graphAct=new QAction(graphIcon,tr("&Graph"),this);
     graphAct->setStatusTip(tr("Begin to Graph"));
-    QObject::connect(graphAct,SIGNAL(triggered()),graphWidget,SLOT(graphSlot()));
+    //点击按钮，加载elemVector数组并画图
+    QObject::connect(graphAct,SIGNAL(triggered()),graphWidget,SLOT(loadAndGraphSlot()));
     graphMenu->addAction(graphAct);
     toolBar->addAction(graphAct);
+
+    //清除界面
+    const QIcon clearIcon=QIcon::fromTheme("document-open",QIcon(":/image/images/paste.png"));
+    QAction *clearAct=new QAction(clearIcon,tr("&Clear"),this);
+    graphAct->setStatusTip(tr("Clear the Broad"));
+    QObject::connect(clearAct,SIGNAL(triggered()),graphWidget,SLOT(cleanSlot()));
+    graphMenu->addAction(clearAct);
+    toolBar->addAction(clearAct);
     return;
 }
 

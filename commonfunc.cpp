@@ -23,3 +23,8 @@ void commonFunc::expandPointByScale(QPoint& point,double scale){
     point.rx()=point.x()*scale;
     point.ry()=point.y()*scale;
 }
+
+void commonFunc::expandPointByScale(QPoint& point,int xoff,int yoff){
+    point.rx()+=xoff;
+    point.ry()+=yoff;
+}

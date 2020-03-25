@@ -16,8 +16,10 @@ public:
     explicit GraphWidget(QWidget *parent = nullptr);
 
 public slots:
-    void loadTextSlot(QString);
-    void graphSlot();
+    void receiveElemVector(QVector<Element*>);
+    void loadAndGraphSlot();
+    void cleanSlot();
+
 private:
     void init();
     void layOut();

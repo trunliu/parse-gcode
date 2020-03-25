@@ -1,18 +1,38 @@
 #include "codeeditwidget.h"
 #include <QtWidgets>
+#include "parsecode.h"
+#include "element.h"
 
 CodeEditWidget::CodeEditWidget(QWidget *parent) :
-    QWidget(parent),textEdit(new QPlainTextEdit)
+    QWidget(parent),
+    textEdit(new QPlainTextEdit),
+    curFile(),
+    parser(new ParseCode)
 {
     //如果文件内容变化，则调用槽documentWasModified()
     connect(textEdit->document(), SIGNAL(contentsChanged()),this, SLOT(documentWasModified()));
 }
 
-void CodeEditWidget::sendText(){
-    if(!textEdit->toPlainText().isEmpty()){
-        emit sendText(textEdit->toPlainText());
-    }else{
-        return ;
+void CodeEditWidget::documentWasModified(){
+    setWindowModified(textEdit->document()->isModified());
+}
+
+//sendText()槽用于发送信号，信号包含了文本内容，在绘图界面graphWidget设置接受信号数据的槽函数
+void CodeEditWidget::parseCodeAndSendText(){
+    QString text=textEdit->toPlainText();
+
+    //当编辑区文本不为空时才解析并发送
+    if(!text.isEmpty()){
+        QVector<Element*> elemVector=parser->ParseFrom(text);
+        if(elemVector.isEmpty()){
+            qDebug()<<"解析失败";
+            QMessageBox::information(this,"提示","解析代码失败",QMessageBox::Yes);
+            return;
+        }else{
+            qDebug()<<"解析成功";
+            QMessageBox::information(this,"提示","解析代码成功",QMessageBox::Yes);
+            emit sendElemVector(elemVector);
+        }
     }
 }
 
@@ -57,9 +77,7 @@ void CodeEditWidget::newFile(){
     }
 }
 
-void CodeEditWidget::documentWasModified(){
-    setWindowModified(textEdit->document()->isModified());
-}
+
 
 
 //正常都返回true，表示处理完成，false表示取消，啥都不干
@@ -109,7 +127,6 @@ bool CodeEditWidget::saveFile(const QString &fileName){
     QApplication::restoreOverrideCursor();
 #endif
     setCurrentFile(fileName);
-    //statusBar()->showMessage(tr("File saved"), 2000);
     return true;
 }
 
@@ -128,12 +145,10 @@ void CodeEditWidget::loadFile(const QString &fileName){
 #endif
 
     textEdit->setPlainText(in.readAll());
-    //emit sendText(textEdit->toPlainText());
 
 #ifndef QT_NO_CURSOR
     QApplication::restoreOverrideCursor();
 #endif
-    //statusBar()->showMessage(tr("File loaded"), 2000);
 }
 
 //设置当前所处的文件

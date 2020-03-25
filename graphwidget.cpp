@@ -24,7 +24,8 @@ void GraphWidget::init(){
     drawingBoard->setPalette(palette1);
 
     //QWidget必须初始化一个大小，否则不显示
-    drawingBoard->resize(800,600);
+    drawingBoard->resize(1080,800);
+
 
     //获取scrollArea的调色面板,设置成黑色
     QPalette palette2=scrollArea->palette();
@@ -57,10 +58,19 @@ void GraphWidget::layOut(){
 
 }
 
-void GraphWidget::loadTextSlot(QString text){
-    drawingBoard->load(text);
+//接受数据的槽
+void GraphWidget::receiveElemVector(QVector<Element*> elemVector){
+    drawingBoard->receiveElemVector(elemVector);
 }
 
-void GraphWidget::graphSlot(){
+//绘图槽:绘图区域先加载再更新界面
+void GraphWidget::loadAndGraphSlot(){
+    drawingBoard->loadElemVector();
+    drawingBoard->update();
+}
+
+//清空界面槽:绘图区域清空数组,再更新界面
+void GraphWidget::cleanSlot(){
+    drawingBoard->clean();
     drawingBoard->update();
 }

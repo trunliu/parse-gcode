@@ -3,7 +3,7 @@
 #include "QDebug"
 
 //构造函数，用列表的方式对成员进行初始化
-ParseCode::ParseCode():text(" "),
+ParseCode::ParseCode():text(""),
     sentenceList(QStringList(0))
 {                  
 //    QStatus status;
@@ -18,7 +18,7 @@ QVector<Element*> ParseCode::ParseFrom(const QString &textEdit){
 
     //预处理：将文本内容分割成一行一行的存入sentenceList列中
     if(!PreProcces(textEdit)){
-        qDebug()<<"文件为空..."<<endl;
+        qDebug()<<"文件为空...";
         return elemList;
     }
 
@@ -27,7 +27,6 @@ QVector<Element*> ParseCode::ParseFrom(const QString &textEdit){
     for(int row=0;row<sentenceList.length();row++)
     {
         tmpElement=parseSentence(sentenceList[row]);
-
         if(tmpElement){
             elemList.push_back(tmpElement);
         }
@@ -40,9 +39,10 @@ QVector<Element*> ParseCode::ParseFrom(const QString &textEdit){
 }
 
 //预处理
-bool ParseCode::PreProcces(const QString &textEdit){
+bool ParseCode::PreProcces(const QString& textEdit){
     this->text=textEdit;
-    if(textEdit.size()){
+
+    if(!text.isEmpty()){
         //去前后空格
         text=text.trimmed();
 
