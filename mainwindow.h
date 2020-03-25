@@ -35,9 +35,9 @@ private:
     Ui::MainWindow *ui;
     QListWidget* listWidget;
     QStackedWidget *stackedWidget;
-    QWidget* centreWidget;
     CodeEditWidget* codeEditWidget;
     GraphWidget* graphWidget;
+    QDockWidget* dockWidget;
 };
 
 #endif // MAINWINDOW_H

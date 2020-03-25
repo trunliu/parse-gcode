@@ -41,12 +41,12 @@ void GraphWidget::layOut(){
     QGridLayout* gridLayout=new QGridLayout(this);
 
     //tabWidget放入第0行第0列，scrollArea放入第0行第1列
-    gridLayout->addWidget(tabWidget,0,0);
-    gridLayout->addWidget(scrollArea,0,1);
+    gridLayout->addWidget(tabWidget,0,1);
+    gridLayout->addWidget(scrollArea,0,0);
 
     //第0列比例系数为1，第1列比例系数为4，实现宽比1：4
-    gridLayout->setColumnStretch(0,1);
-    gridLayout->setColumnStretch(1,4);
+    gridLayout->setColumnStretch(0,4);
+    gridLayout->setColumnStretch(1,1);
 
     //设置水平、垂直、以及边缘边距为10
     gridLayout->setHorizontalSpacing(10);

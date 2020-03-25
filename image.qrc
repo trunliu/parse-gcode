@@ -1,0 +1,15 @@
+<RCC>
+    <qresource prefix="/image">
+        <file>icon/1.png</file>
+        <file>icon/2.png</file>
+        <file>icon/clean.png</file>
+        <file>icon/codeEditWidget.png</file>
+        <file>icon/graph.png</file>
+        <file>icon/graphWidget.png</file>
+        <file>icon/new.png</file>
+        <file>icon/open.png</file>
+        <file>icon/save.png</file>
+        <file>icon/start.png</file>
+        <file>icon/saveAs.png</file>
+    </qresource>
+</RCC>

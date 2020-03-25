@@ -12,8 +12,21 @@ MainWindow::MainWindow(QWidget *parent) :
     stackedWidget(new QStackedWidget),
     codeEditWidget(new CodeEditWidget),
     graphWidget(new GraphWidget),
-    centreWidget(new QWidget)
+    dockWidget(new QDockWidget)
 {
+    //使用样式表设置菜单栏颜色为两灰色(#D5D5D5十六进制)
+    setStyleSheet("QMenuBar:item{background-color:#D5D5D5;}QMenuBar{background-color:#D5D5D5;}"
+                  "QToolBar:item{background-color:#D5D5D5;}QToolBar{background-color:#D5D5D5;}"
+                  "QStatusBar:item{background-color:#D5D5D5;}QStatusBar{background-color:#D5D5D5;}");
+
+    //使用调色板设置背景颜色为深灰色(RGB(74,75,75)十进制)
+    QPalette palette0=this->palette();
+    palette0.setColor(QPalette::Background,QColor(74,75,75));
+    this->setPalette(palette0);
+
+    //程序标题
+    setWindowTitle(tr("解析G代码程序"));
+
     setLayout();
     createActions();
     createStatusBar();
@@ -36,37 +49,26 @@ void MainWindow::setLayout()
     //初始化窗口大小
     resize(1442,900);
 
-//    //设置列表窗口
-//    listWidget->insertItem(0,tr("window1"));
-//    listWidget->insertItem(1,tr("window2"));
+    //左侧添加停靠窗口，用于切换编辑或绘图界面
+    dockWidget->setWidget(listWidget);
+    addDockWidget(Qt::LeftDockWidgetArea,dockWidget);
 
-//    //设置堆栈窗口
-//    stackedWidget->addWidget(codeEditWidget);
-//    stackedWidget->addWidget(graphWidget);
+    //设置左侧列表窗口
+    listWidget->setWindowTitle(tr("界面切换栏"));
+    listWidget->insertItem(0,tr("代码编辑界面"));
+    listWidget->item(0)->setIcon(QIcon(":/image/icon/codeEditWidget.png"));
+    listWidget->insertItem(1,tr("绘制图形界面"));
+    listWidget->item(1)->setIcon(QIcon(":/image/icon/graphWidget.png"));
+    //设置为大图标显示模式
+    //listWidget->setViewMode(QListView::IconMode);
+    connect(listWidget,SIGNAL(currentRowChanged(int)),stackedWidget,SLOT(setCurrentIndex(int)));
 
-//    //设置主窗口布局
-//    QGridLayout* gridLayout=new QGridLayout;
-//    gridLayout->addWidget(listWidget,0,0);
-//    gridLayout->addWidget(stackedWidget,0,1);
+    //设置堆栈窗口
+    stackedWidget->addWidget(codeEditWidget);
+    stackedWidget->addWidget(graphWidget);
 
-//    //设置所占比例1：6
-//    gridLayout->setColumnStretch(0,1);
-//    gridLayout->setColumnStretch(1,6);
-
-//    //设置水平、垂直、以及边缘边距为10
-//    gridLayout->setHorizontalSpacing(10);
-//    gridLayout->setVerticalSpacing(10);
-//    gridLayout->setContentsMargins(10,10,10,10);
-
-//    connect(listWidget,SIGNAL(currentRowChanged(int)),stackedWidget,SLOT(setCurrentIndex(int)));
-
-
-    //将centerWidget插入mainWindow中心
-    //setCentralWidget(codeEditWidget->textEdit);
-    setCentralWidget(graphWidget);
-
-    //启动布局
-    //setLayout(gridLayout);
+    //将stackedWidget插入mainWindow中心
+    setCentralWidget(stackedWidget);
 
 }
 
@@ -74,48 +76,45 @@ void MainWindow::setLayout()
 void MainWindow::createActions()
 {
     //创建一个文件菜单栏，两个工具栏
-    QMenu *fileMenu = menuBar()->addMenu(tr("&File"));
-    QMenu *graphMenu = menuBar()->addMenu(tr("&Graph"));
-    QToolBar *fileToolBar = addToolBar(tr("File"));
-    QToolBar *toolBar = addToolBar(tr("action"));
+    QMenu *fileMenu = menuBar()->addMenu(tr("文件"));
+    QMenu *graphMenu = menuBar()->addMenu(tr("绘图"));
+    QToolBar *fileToolBar = addToolBar(tr("文件工具栏"));
+    QToolBar *toolBar = addToolBar(tr("绘图工具栏"));
 
-    //设置新建动作
-    const QIcon newIcon = QIcon::fromTheme("document-new", QIcon(":/image/images/new.png"));
-    QAction *newAct = new QAction(newIcon, tr("&New"), this);
-    newAct->setShortcuts(QKeySequence::New);
-    newAct->setStatusTip(tr("Create a new file"));
+    //设置新建动作,使用资源":+资源前缀名+文件名"
+    const QIcon newIcon = QIcon(":/image/icon/new.png");
+    QAction *newAct = new QAction(newIcon, tr("新建"), this);
+    newAct->setStatusTip(tr("新建文件"));
     connect(newAct, SIGNAL(triggered()), codeEditWidget, SLOT(newFile()));
     fileMenu->addAction(newAct);
     fileToolBar->addAction(newAct);
 
     //设置打开动作
-    const QIcon openIcon=QIcon::fromTheme("document-open",QIcon(":/image/images/open.png"));
-    QAction *openAct=new QAction(openIcon,tr("&Open"),this);
-    openAct->setShortcuts(QKeySequence::Open);
-    openAct->setStatusTip(tr("Open a file"));
+    const QIcon openIcon=QIcon(":/image/icon/open.png");
+    QAction *openAct=new QAction(openIcon,tr("打开"),this);
+    openAct->setStatusTip(tr("打开文件"));
     QObject::connect(openAct,SIGNAL(triggered()),codeEditWidget,SLOT(open()));
     fileMenu->addAction(openAct);
     fileToolBar->addAction(openAct);
 
     //设置保存动作
-    const QIcon saveIcon = QIcon::fromTheme("document-save", QIcon(":/image/images/new.png"));
-    QAction *saveAct = new QAction(saveIcon, tr("&Save"), this);
-    saveAct->setShortcuts(QKeySequence::Save);
-    newAct->setStatusTip(tr("save file"));
+    const QIcon saveIcon =QIcon(":/image/icon/save.png");
+    QAction *saveAct = new QAction(saveIcon, tr("保存"), this);
+    newAct->setStatusTip(tr("保存文件"));
     connect(saveAct, SIGNAL(triggered()), codeEditWidget, SLOT(save()));
     fileMenu->addAction(saveAct);
     fileToolBar->addAction(saveAct);
 
     //设置另存为动作
-    const QIcon saveAsIcon = QIcon::fromTheme("document-save-as");
-    QAction *saveAsAct = fileMenu->addAction(saveAsIcon, tr("Save &As..."), codeEditWidget, SLOT(saveAs()));
-    saveAsAct->setShortcuts(QKeySequence::SaveAs);
+    const QIcon saveAsIcon =QIcon(":/image/icon/saveAs.png");
+    QAction *saveAsAct = fileMenu->addAction(saveAsIcon, tr("另存为"), codeEditWidget, SLOT(saveAs()));
     saveAsAct->setStatusTip(tr("Save the document under a new name"));
+    fileMenu->addAction(saveAsAct);
 
     //设置开始解析动作
-    const QIcon stratIcon=QIcon::fromTheme("document-open",QIcon(":/image/images/paste.png"));
-    QAction *startAct=new QAction(stratIcon,tr("&Start"),this);
-    openAct->setStatusTip(tr("Begin to Parse the Gcode"));
+    const QIcon stratIcon=QIcon(":/image/icon/start.png");
+    QAction *startAct=new QAction(stratIcon,tr("开始"),this);
+    openAct->setStatusTip(tr("开始解析G代码"));
     //点击开始按钮，代码编辑界面解析代码生成elemVector数组，解析成功窗口提示信息。并发送elemVector数组至graphWidget界面
     QObject::connect(startAct,SIGNAL(triggered()),codeEditWidget,SLOT(parseCodeAndSendText()));
     //绘图界面接受代码编辑界面发送的elemVector数组
@@ -124,18 +123,18 @@ void MainWindow::createActions()
     toolBar->addAction(startAct);
 
     //设置开始绘图动作
-    const QIcon graphIcon=QIcon::fromTheme("document-open",QIcon(":/image/images/paste.png"));
-    QAction *graphAct=new QAction(graphIcon,tr("&Graph"),this);
-    graphAct->setStatusTip(tr("Begin to Graph"));
+    const QIcon graphIcon=QIcon(":/image/icon/graph.png");
+    QAction *graphAct=new QAction(graphIcon,tr("绘图"),this);
+    graphAct->setStatusTip(tr("开始绘图"));
     //点击按钮，加载elemVector数组并画图
     QObject::connect(graphAct,SIGNAL(triggered()),graphWidget,SLOT(loadAndGraphSlot()));
     graphMenu->addAction(graphAct);
     toolBar->addAction(graphAct);
 
     //清除界面
-    const QIcon clearIcon=QIcon::fromTheme("document-open",QIcon(":/image/images/paste.png"));
-    QAction *clearAct=new QAction(clearIcon,tr("&Clear"),this);
-    graphAct->setStatusTip(tr("Clear the Broad"));
+    const QIcon clearIcon=QIcon(":/image/icon/clean.png");
+    QAction *clearAct=new QAction(clearIcon,tr("清除"),this);
+    graphAct->setStatusTip(tr("清除界面"));
     QObject::connect(clearAct,SIGNAL(triggered()),graphWidget,SLOT(cleanSlot()));
     graphMenu->addAction(clearAct);
     toolBar->addAction(clearAct);

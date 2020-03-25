@@ -29,6 +29,9 @@ private slots:
     void documentWasModified();
 
 private:
+    //设置界面布局
+    void layout();
+
     //读入内容
     void loadFile(const QString &fileName);
 

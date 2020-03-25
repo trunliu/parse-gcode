@@ -9,8 +9,16 @@ CodeEditWidget::CodeEditWidget(QWidget *parent) :
     curFile(),
     parser(new ParseCode)
 {
+    layout();
     //如果文件内容变化，则调用槽documentWasModified()
     connect(textEdit->document(), SIGNAL(contentsChanged()),this, SLOT(documentWasModified()));
+}
+
+
+void CodeEditWidget::layout(){
+    QGridLayout* gridLayout=new QGridLayout;
+    gridLayout->addWidget(textEdit);
+    setLayout(gridLayout);
 }
 
 void CodeEditWidget::documentWasModified(){
