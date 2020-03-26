@@ -96,9 +96,9 @@ bool CodeEditWidget::maybeSave(){
     }
     //否则弹窗
     const QMessageBox::StandardButton ret
-        = QMessageBox::warning(this, tr("Application"),
-                               tr("The document has been modified.\n"
-                                  "Do you want to save your changes?"),
+        = QMessageBox::warning(this, tr("提示"),
+                               tr("内容已被修改.\n"
+                                  "是否保存文件?"),
                                QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
     switch (ret) {
     //选择保存按钮
@@ -118,8 +118,8 @@ bool CodeEditWidget::saveFile(const QString &fileName){
 
     //打开不成功提示warining
     if (!file.open(QFile::WriteOnly | QFile::Text)) {
-        QMessageBox::warning(this, tr("Application"),
-                             tr("Cannot write file %1:\n%2.")
+        QMessageBox::warning(this, tr("提示"),
+                             tr("没有保存的文件路径 %1:\n%2.")
                              .arg(QDir::toNativeSeparators(fileName),
                                   file.errorString()));
         return false;
@@ -141,8 +141,8 @@ bool CodeEditWidget::saveFile(const QString &fileName){
 void CodeEditWidget::loadFile(const QString &fileName){
     QFile file(fileName);
     if (!file.open(QFile::ReadOnly | QFile::Text)) {
-        QMessageBox::warning(this, tr("Application"),
-                             tr("Cannot read file %1:\n%2.")
+        QMessageBox::warning(this, tr("提示"),
+                             tr("读取文件失败 %1:\n%2.")
                              .arg(QDir::toNativeSeparators(fileName), file.errorString()));
         return;
     }

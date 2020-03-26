@@ -34,8 +34,8 @@ public:
     static void reversePointByX_Axis(QPoint& point);
     //将坐标值按scale比例系数进行放缩
     static void expandPointByScale(QPoint& point,double scale);
-    //
-    static void expandPointByScale(QPoint& point,int xoff,int yoff);
+    //将坐标值按xoff,yoff进行偏移
+    static void offsetPoint(QPoint& point,int xoff,int yoff);
 };
 
 #endif // COMMONFUNC_H
