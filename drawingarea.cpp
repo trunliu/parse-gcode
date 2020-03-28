@@ -84,8 +84,8 @@ void DrawingArea::drawLine(QPainter& painter,QPen& pen,Element* it){
     start=dynamic_cast<Shape*>(it)->Start();
     end=dynamic_cast<Shape*>(it)->End();
 
-    painter.setPen(pen);
     pen.setWidth(3);
+    painter.setPen(pen);
     painter.setRenderHint(QPainter::Antialiasing, true);
     painter.setBrush(Qt::NoBrush);
 
@@ -105,34 +105,58 @@ void DrawingArea::drawLine(QPainter& painter,QPen& pen,Element* it){
 }
 
 void DrawingArea::drawArc(QPainter &painter,QPen &pen,Element* it){
-    QPoint start,end,centre;
-    int Acw=0;
+    QPoint start,end,center;
+    int isAcw=0;
+    //将it先转换成他的派生类myArc
+    myArc* ArcElem=dynamic_cast<myArc*>(dynamic_cast<Shape*>(it));
 
-    start=dynamic_cast<Shape*>(it)->Start();
-    end=dynamic_cast<Shape*>(it)->End();
-    //centre=dynamic_cast<Arc*>(it)->Centre();
-    //Acw=dynamic_cast<Arc*>(it)->Status().isAcw;//1->逆时针 0->顺时针 -1->直线
+    //获得：起点、终点、圆心、方向
+    start=ArcElem->Start();
+    end=ArcElem->End();
+    center=ArcElem->Centre();
+    isAcw=ArcElem->Status().isAcw;      //1->逆时针 0->顺时针 -1->直线
 
-    painter.setPen(pen);
     pen.setWidth(3);
+    painter.setPen(pen);
     painter.setRenderHint(QPainter::Antialiasing, true);
     painter.setBrush(Qt::NoBrush);
 
-//    //计算参数
-//    int startAngle=0, int spanAngle=0;
-//    int r=sqrt((start.x()-centre.x())*(start.x()-centre.x())+(start.y()-centre.y())*(start.y()-centre.y()));
-//    int width=2*r;
-//    int height=2*r;
-//    int x=centre.y()+r;
-//    int y=centre.x()-r;
-//    spanAngle=acos(向量点积/向量的模)  //弧度  /pi*180=度数
+    //计算画弧所需的参数有3个：起始角度、夹角、外切矩形
+    double startAngle=0,spanAngle=0;
+    QRectF rectangle;
 
-//    //起始角度=第一个向量与3点角度，3点方向为0°
+    //定义起始向量和终止向量
+    QPoint startVector=start-center;
+    QPoint endVector=end-center;
 
+    //构建两个复数,一个是起点的复数，一个是终点的复数，两者相除即得到旋转子的复数
+    //乘以一个模为1的复数时，不会导致缩放，只会产生旋转，这样的复数就称为旋转子（rotor）
+    //逆时针：*旋转子(cos(θ)+sin(θ)i)   顺时针：*旋转子的共轨复数(cos(θ)-sin(θ)i)
+    //默认逆时针角度为正，顺时针为负
+    ComplexNum c1(startVector.x(),startVector.y());
+    ComplexNum c2(endVector.x(),endVector.y());
+    ComplexNum rotor=c2/c1;
+    spanAngle=(isAcw) ? qAtan2(rotor.B(),rotor.A()):-qAtan2(-rotor.B(),rotor.A());
 
-//    painter.drawArc(x, y, width, height, startAngle, spanAngle);
+    c1.setComplexNumValue(1,0);
+    c2.setComplexNumValue(startVector.x(),startVector.y());
+    rotor=c2/c1;
+    startAngle=qAtan2(rotor.B(),rotor.A());
+
+    //弧度转角度
+    commonFunc::radianToAngle(spanAngle);
+    commonFunc::radianToAngle(startAngle);
+
+    //最后配置外切的矩形,还需要考虑放大的系数和矩形坐标轴的反转。弧线的半径=向量的长度
+    //放大得时候,角度值都不会发送变化,但圆心得位置和半径会变。
+    int r=startVector.manhattanLength()*scale;
+    rectangle.setRect(center.x()-r,-(center.y()+r),2*r,2*r);
+
+    //由于16个像素相当于1°，所以所求角度还需*16
+    painter.drawArc(rectangle, startAngle*16, spanAngle*16);
 }
 
+//接受数据
 void DrawingArea::receiveElemVector(QVector<Element*> elemVector){
     receiveData=elemVector;
 }

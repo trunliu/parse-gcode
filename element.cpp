@@ -51,14 +51,14 @@ void Shape::setEnd(QPoint end)
 Line::Line(){}
 
 
-Arc::Arc():centre(0,0){}
+myArc::myArc():centre(0,0){}
 
-QPoint Arc::Centre()
+QPoint myArc::Centre()
 {
     return this->centre;
 }
 
-void Arc::setCentre(QPoint centre)
+void myArc::setCentre(QPoint centre)
 {
     this->centre=centre;
 }

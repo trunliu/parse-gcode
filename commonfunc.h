@@ -1,6 +1,7 @@
 #ifndef COMMONFUNC_H
 #define COMMONFUNC_H
 #include <QVector>
+class QPoint;
 
 //状态结构体：储存元素的状态信息
 typedef struct
@@ -21,7 +22,7 @@ enum CodeType{
     FIRE_OFF_CODE,FINISH_CODE,NO_USE_CODE,
 };
 
-class QPoint;
+
 //公共函数类
 class commonFunc
 {
@@ -36,6 +37,32 @@ public:
     static void expandPointByScale(QPoint& point,double scale);
     //将坐标值按xoff,yoff进行偏移
     static void offsetPoint(QPoint& point,int xoff,int yoff);
+    //弧度转为角度
+    static void radianToAngle(double&);
+};
+
+//自定义复数类
+class ComplexNum
+{
+public:
+    ComplexNum();
+    ComplexNum(double a,double b);
+
+public:
+    //复数的四则运算
+    ComplexNum operator +(const ComplexNum& num);
+    ComplexNum operator -(const ComplexNum& num);
+    ComplexNum operator *(const ComplexNum& num);
+    ComplexNum operator /(const ComplexNum& num);
+
+    //其他函数,设置和取模
+    void setComplexNumValue(double a,double b);
+    double getComplexNumMold();
+    double A();
+    double B();
+
+private:
+    double a,b;
 };
 
 #endif // COMMONFUNC_H

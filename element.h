@@ -45,17 +45,16 @@ protected:
 
 class Line:public Shape
 {
-
 public:
     Line();
     virtual bool isArc(){return false;}
 };
 
 
-class Arc:public Shape
+class myArc:public Shape
 {
 public:
-    Arc();
+    myArc();
     QPoint Centre();
     void setCentre(QPoint);
     virtual bool isArc(){return true;}

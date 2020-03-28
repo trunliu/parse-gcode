@@ -4,15 +4,19 @@
 
 //构造函数，用列表的方式对成员进行初始化
 ParseCode::ParseCode():text(""),
-    sentenceList(QStringList(0))
+    sentenceList(QStringList(0)),
+    lastPoint(QPoint(0,0)),
+    status(QStatus())
 {                  
-//    QStatus status;
-//    QPoint lastPoint;
-}
 
+}
 
 //解析代码入口，返回element数组
 QVector<Element*> ParseCode::ParseFrom(const QString &textEdit){
+    //每次解析的开始，对状态值和上一点坐标初始化
+    lastPoint=QPoint(0,0);
+    status=QStatus();
+
     Element*tmpElement=NULL;
     QVector<Element*> elemList;
 
@@ -136,11 +140,13 @@ Element* ParseCode::parseSentence(QString sentence){
             break;
        }
         case ACW_ARC_CODE:{
+            status.isQuickLine=false;
             status.isAcw=1;
             *res=createArcElement(sentence,status,lastPoint);
             break;
        }
         case CW_ARC_CODE:{
+            status.isQuickLine=false;
             status.isAcw=0;
             *res=createArcElement(sentence,status,lastPoint);
             break;
@@ -240,9 +246,39 @@ Element* ParseCode::createLineElement(QString sentence,QStatus status,QPoint las
 
 //创建弧元素
 Element* ParseCode::createArcElement(QString sentence,QStatus status,QPoint lastPoint){
-    Arc* res=new Arc;
+    //对一行进行分割，按空格分割成单词列
+    QStringList words=commonFunc::splitBy(sentence," ");
+    myArc* arcElement=new myArc;
+    QPoint end(0,0),center(0,0);
+    double xoff=0,yoff=0,ioff=0,joff=0;
 
-    return res;
+    //提取数据
+    xoff=extractValFrom(words[1]);
+    yoff=extractValFrom(words[2]);
+    ioff=extractValFrom(words[3]);
+    joff=extractValFrom(words[4]);
+
+    //相对坐标情况下，结果为增量式坐标
+    if(status.isRelative)
+    {
+        end.setX(lastPoint.x()+xoff);
+        end.setY(lastPoint.y()+yoff);
+        center.setX(lastPoint.x()+ioff);
+        center.setY(lastPoint.y()+joff);
+    }else{
+        end.setX(xoff);
+        end.setY(yoff);
+        center.setX(ioff);
+        center.setY(joff);
+    }
+
+    //配置arcElement，上一个线的终点lastPoint就是这条线的起点。
+    arcElement->setStatus(status);
+    arcElement->setEnd(end);
+    arcElement->setStart(lastPoint);
+    arcElement->setCentre(center);
+    arcElement->setSentence(sentence);
+    return arcElement;
 }
 
 
