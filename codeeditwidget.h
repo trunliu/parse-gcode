@@ -8,6 +8,7 @@ class Element;
 class CodeEditWidget : public QWidget
 {
     Q_OBJECT
+
 public:
     explicit CodeEditWidget(QWidget *parent = nullptr);
 

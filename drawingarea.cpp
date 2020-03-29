@@ -36,13 +36,27 @@ void DrawingArea::paintEvent(QPaintEvent *event){
 
 //建立坐标轴
 void DrawingArea::drawAxis(QPainter &painter,QPen &pen){
+    QPoint start,end;
     pen.setColor(Qt::gray);
     pen.setStyle(Qt::SolidLine);
     pen.setWidth(1);
     painter.setPen(pen);
     painter.setRenderHint(QPainter::Antialiasing, true);
     painter.setBrush(Qt::NoBrush);
-    painter.drawLine(QPoint(0,-height()/2),QPoint(0,height()/2));
+
+    start=QPoint(0,-height()/2;
+    end=QPoint(0,height()/2);
+
+    //按照滚轮滚动计算的比例系数进行调整
+    commonFunc::expandPointByScale(start,scale);
+    commonFunc::expandPointByScale(end,scale);
+
+    //按照鼠标拉扯手势计算的偏移量进行调整
+    commonFunc::offsetPoint(start,xoff,yoff);
+    commonFunc::offsetPoint(end,xoff,yoff);
+
+    painter.drawLine(start,end);
+
     painter.drawLine(QPoint(-width()/2,0),QPoint(width()/2,0));
 }
 
