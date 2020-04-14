@@ -25,9 +25,9 @@ private:
     enum CodeType CodeType(const QString &cmd);
 
     //分别创建非图元，直线，弧元素
-    Element* createNoShapeElement(QString sentence,QStatus status,QPoint lastPoint);
-    Element* createLineElement(QString sentence,QStatus status,QPoint lastPoint);
-    Element* createArcElement(QString sentence,QStatus status,QPoint lastPoint);
+    Element* createNoShapeElement(QString sentence,QStatus status,QPointF lastPoint);
+    Element* createLineElement(QString sentence,QStatus status,QPointF lastPoint);
+    Element* createArcElement(QString sentence,QStatus status,QPointF lastPoint);
 
     //提取数值
     double extractValFrom(const QString &word);
@@ -38,7 +38,7 @@ private:
 
     QStringList sentenceList;       //输入文本的内容按行分解成行列表
     QStatus status;
-    QPoint lastPoint;               //记录上一节末点坐标
+    QPointF lastPoint;               //记录上一节末点坐标
 };
 
 #endif // PARSECODE_H

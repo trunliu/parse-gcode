@@ -5,7 +5,7 @@
 //构造函数，用列表的方式对成员进行初始化
 ParseCode::ParseCode():text(""),
     sentenceList(QStringList(0)),
-    lastPoint(QPoint(0,0)),
+    lastPoint(QPointF(0,0)),
     status(QStatus())
 {                  
 
@@ -203,7 +203,7 @@ enum CodeType ParseCode::CodeType(const QString &cmd){
 }
 
 //创建非图元类型的元素
-Element* ParseCode::createNoShapeElement(QString sentence,QStatus status,QPoint lastPoint){
+Element* ParseCode::createNoShapeElement(QString sentence,QStatus status,QPointF lastPoint){
     //不需要lastPoint这个参数
     Q_UNUSED(lastPoint);
     NoShape*noShapeElement=new NoShape;
@@ -215,11 +215,11 @@ Element* ParseCode::createNoShapeElement(QString sentence,QStatus status,QPoint 
 }
 
 //创建直线元素
-Element* ParseCode::createLineElement(QString sentence,QStatus status,QPoint lastPoint){
+Element* ParseCode::createLineElement(QString sentence,QStatus status,QPointF lastPoint){
     //对一行进行分割，按空格分割成单词列
     QStringList words=commonFunc::splitBy(sentence," ");
     Line* lineElement=new Line;
-    QPoint end(0,0);
+    QPointF end(0,0);
     double xoff=0,yoff=0;
 
     //提取数据
@@ -245,11 +245,11 @@ Element* ParseCode::createLineElement(QString sentence,QStatus status,QPoint las
 }
 
 //创建弧元素
-Element* ParseCode::createArcElement(QString sentence,QStatus status,QPoint lastPoint){
+Element* ParseCode::createArcElement(QString sentence,QStatus status,QPointF lastPoint){
     //对一行进行分割，按空格分割成单词列
     QStringList words=commonFunc::splitBy(sentence," ");
     myArc* arcElement=new myArc;
-    QPoint end(0,0),center(0,0);
+    QPointF end(0,0),center(0,0);
     double xoff=0,yoff=0,ioff=0,joff=0;
 
     //提取数据

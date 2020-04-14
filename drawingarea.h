@@ -5,7 +5,7 @@
 class QPainter;
 class Element;
 class ParseCode;
-
+class Compensation;
 class DrawingArea : public QWidget
 {
     Q_OBJECT
@@ -33,7 +33,7 @@ private:
 
 private:
     //绘制元素=画直线+画圆弧
-    void drawElement(QPainter& painter,QPen& pen);
+    void drawElement(const QVector<Element*>& elementVector,QPainter& painter,QPen& pen);
     void drawLine(QPainter& painter,QPen& pen,Element* it);
     void drawArc(QPainter& painter,QPen& pen,Element* it);
 
@@ -44,11 +44,17 @@ private:
     //解析用的句柄
     ParseCode* parser;
 
+    //刀补补偿用的句柄
+    Compensation* compensater;
+
     //用于数据的接受，作为中转
     QVector<Element*> receiveData;
 
     //解析后的element容器
     QVector<Element*> elemVector;
+
+    //刀补补偿后生成的element容器
+    QVector<Element*> compensateElemVector;
 
     //放大缩小的比例系数
     double scale;

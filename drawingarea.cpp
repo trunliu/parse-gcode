@@ -2,17 +2,21 @@
 #include <QtWidgets>
 #include "element.h"
 #include "parsecode.h"
+#include "compensation.h"
 #include <QMouseEvent>
 #include <QMessageBox>
+
 
 QPoint mousePressPos(0,0);
 double xoff=0,yoff=0;
 
 DrawingArea::DrawingArea(QWidget *parent) : QWidget(parent),
     parser(new ParseCode),
+    compensater(new Compensation),
     elemVector(0),
     receiveData(0),
-    scale(1)
+    scale(1),
+    compensateElemVector(elemVector)
 {
 
 }
@@ -29,14 +33,24 @@ void DrawingArea::paintEvent(QPaintEvent *event){
 
     //当elemVector不为空时,立即绘图,所以给elemVector赋值就是绘图
     if(!elemVector.isEmpty()){
-        drawElement(painter,pen);
+        drawElement(elemVector,painter,pen);
     }
 
+    if(!elemVector.isEmpty()){
+        compensater->setVector(elemVector);
+        //输入刀补的半径,左补偿为负值，右补偿为正值
+        compensateElemVector=compensater->calulate(-10);
+    }
+
+    //当C刀补计算后生成的elementVector不为空时，立即绘图
+    if(!compensateElemVector.isEmpty()){
+        drawElement(compensateElemVector,painter,pen);
+    }
 }
 
 //建立坐标轴
 void DrawingArea::drawAxis(QPainter &painter,QPen &pen){
-    QPoint start,end;
+    QPointF start,end;
     pen.setColor(Qt::gray);
     pen.setStyle(Qt::SolidLine);
     pen.setWidth(1);
@@ -44,8 +58,8 @@ void DrawingArea::drawAxis(QPainter &painter,QPen &pen){
     painter.setRenderHint(QPainter::Antialiasing, true);
     painter.setBrush(Qt::NoBrush);
 
-    start=QPoint(0,-height()/2;
-    end=QPoint(0,height()/2);
+    start=QPointF(0,-height()/2);
+    end=QPointF(0,height()/2);
 
     //按照滚轮滚动计算的比例系数进行调整
     commonFunc::expandPointByScale(start,scale);
@@ -56,12 +70,11 @@ void DrawingArea::drawAxis(QPainter &painter,QPen &pen){
     commonFunc::offsetPoint(end,xoff,yoff);
 
     painter.drawLine(start,end);
-
-    painter.drawLine(QPoint(-width()/2,0),QPoint(width()/2,0));
+    painter.drawLine(QPointF(-width()/2,0),QPointF(width()/2,0));
 }
 
 //绘制elemVector数组中的里的每一个element
-void DrawingArea::drawElement(QPainter& painter,QPen& pen){
+void DrawingArea::drawElement(const QVector<Element*>& elemVector,QPainter& painter,QPen& pen){
     //it为迭代器
     for(Element* it:elemVector){
         //使用多态返回是否是直线或圆弧图元对象
@@ -92,7 +105,7 @@ void DrawingArea::drawElement(QPainter& painter,QPen& pen){
 }
 
 void DrawingArea::drawLine(QPainter& painter,QPen& pen,Element* it){
-    QPoint start,end;
+    QPointF start,end;
 
     //获取起始点坐标,通过动态类型转换将父类指针Element*转化成子类指针Shape*
     start=dynamic_cast<Shape*>(it)->Start();
@@ -119,7 +132,7 @@ void DrawingArea::drawLine(QPainter& painter,QPen& pen,Element* it){
 }
 
 void DrawingArea::drawArc(QPainter &painter,QPen &pen,Element* it){
-    QPoint start,end,center;
+    QPointF start,end,center;
     int isAcw=0;
     //将it先转换成他的派生类myArc
     myArc* ArcElem=dynamic_cast<myArc*>(dynamic_cast<Shape*>(it));
@@ -140,8 +153,8 @@ void DrawingArea::drawArc(QPainter &painter,QPen &pen,Element* it){
     QRectF rectangle;
 
     //定义起始向量和终止向量
-    QPoint startVector=start-center;
-    QPoint endVector=end-center;
+    QPointF startVector=start-center;
+    QPointF endVector=end-center;
 
     //构建两个复数,一个是起点的复数，一个是终点的复数，两者相除即得到旋转子的复数
     //乘以一个模为1的复数时，不会导致缩放，只会产生旋转，这样的复数就称为旋转子（rotor）
@@ -220,5 +233,8 @@ void DrawingArea::mouseMoveEvent(QMouseEvent *event){
 void DrawingArea::clean(){
     if(!elemVector.isEmpty()){
         elemVector={};
+    }  
+    if(!compensateElemVector.isEmpty()){
+        compensateElemVector={};
     }
 }

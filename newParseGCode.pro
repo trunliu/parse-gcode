@@ -31,7 +31,8 @@ SOURCES += \
     parsecode.cpp \
     codeeditwidget.cpp \
     graphwidget.cpp \
-    drawingarea.cpp
+    drawingarea.cpp \
+    compensation.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -40,7 +41,8 @@ HEADERS += \
     parsecode.h \
     codeeditwidget.h \
     graphwidget.h \
-    drawingarea.h
+    drawingarea.h \
+    compensation.h
 
 FORMS += \
         mainwindow.ui

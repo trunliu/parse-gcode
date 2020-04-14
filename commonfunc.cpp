@@ -16,17 +16,17 @@ QStringList commonFunc::splitBy(QString text,QString ch){
 }
 
 //QPoint类整形精度的点，ry()来直接改变当前点的坐标并返回其引用
-void commonFunc::reversePointByX_Axis(QPoint &point){
+void commonFunc::reversePointByX_Axis(QPointF &point){
     point.ry()=-point.y();
 }
 
 
-void commonFunc::expandPointByScale(QPoint& point,double scale){
+void commonFunc::expandPointByScale(QPointF& point,double scale){
     point.rx()=point.x()*scale;
     point.ry()=point.y()*scale;
 }
 
-void commonFunc::offsetPoint(QPoint& point,int xoff,int yoff){
+void commonFunc::offsetPoint(QPointF& point,int xoff,int yoff){
     point.rx()+=xoff;
     point.ry()+=yoff;
 }

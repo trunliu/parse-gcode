@@ -32,14 +32,14 @@ class Shape:public Element
 {
 public:
     Shape();
-    QPoint Start();
-    QPoint End();
-    void setStart(QPoint start);
-    void setEnd(QPoint end);
+    QPointF Start();
+    QPointF End();
+    void setStart(QPointF start);
+    void setEnd(QPointF end);
     virtual bool isShape(){return true; }
     virtual bool isArc()=0;
 protected:
-    QPoint start,end;
+    QPointF start,end;
 };
 
 
@@ -55,11 +55,11 @@ class myArc:public Shape
 {
 public:
     myArc();
-    QPoint Centre();
-    void setCentre(QPoint);
+    QPointF Centre();
+    void setCentre(QPointF);
     virtual bool isArc(){return true;}
 private:
-    QPoint centre;
+    QPointF centre;
 };
 
 

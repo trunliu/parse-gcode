@@ -27,22 +27,22 @@ NoShape::NoShape(){}
 
 Shape::Shape():Element(),start(0,0),end(0,0){}
 
-QPoint Shape::Start()
+QPointF Shape::Start()
 {
     return this->start;
 }
 
-QPoint Shape::End()
+QPointF Shape::End()
 {
     return this->end;
 }
 
-void Shape::setStart(QPoint start)
+void Shape::setStart(QPointF start)
 {
     this->start=start;
 }
 
-void Shape::setEnd(QPoint end)
+void Shape::setEnd(QPointF end)
 {
     this->end=end;
 }
@@ -53,12 +53,12 @@ Line::Line(){}
 
 myArc::myArc():centre(0,0){}
 
-QPoint myArc::Centre()
+QPointF myArc::Centre()
 {
     return this->centre;
 }
 
-void myArc::setCentre(QPoint centre)
+void myArc::setCentre(QPointF centre)
 {
     this->centre=centre;
 }

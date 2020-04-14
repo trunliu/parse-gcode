@@ -1,7 +1,7 @@
 #ifndef COMMONFUNC_H
 #define COMMONFUNC_H
 #include <QVector>
-class QPoint;
+class QPointF;
 
 //状态结构体：储存元素的状态信息
 typedef struct
@@ -32,11 +32,11 @@ public:
     //根据字符串ch分段
     static QStringList splitBy(QString text,QString ch);
     //将坐标值沿x轴反转处理
-    static void reversePointByX_Axis(QPoint& point);
+    static void reversePointByX_Axis(QPointF& point);
     //将坐标值按scale比例系数进行放缩
-    static void expandPointByScale(QPoint& point,double scale);
+    static void expandPointByScale(QPointF& point,double scale);
     //将坐标值按xoff,yoff进行偏移
-    static void offsetPoint(QPoint& point,int xoff,int yoff);
+    static void offsetPoint(QPointF& point,int xoff,int yoff);
     //弧度转为角度
     static void radianToAngle(double&);
 };
