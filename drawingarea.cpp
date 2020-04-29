@@ -39,7 +39,7 @@ void DrawingArea::paintEvent(QPaintEvent *event){
     if(!elemVector.isEmpty()){
         compensater->setVector(elemVector);
         //输入刀补的半径,左补偿为负值，右补偿为正值
-        compensateElemVector=compensater->calulate(-10);
+        compensateElemVector=compensater->calulate(-2);
     }
 
     //当C刀补计算后生成的elementVector不为空时，立即绘图
@@ -111,7 +111,7 @@ void DrawingArea::drawLine(QPainter& painter,QPen& pen,Element* it){
     start=dynamic_cast<Shape*>(it)->Start();
     end=dynamic_cast<Shape*>(it)->End();
 
-    pen.setWidth(3);
+    pen.setWidth(2);
     painter.setPen(pen);
     painter.setRenderHint(QPainter::Antialiasing, true);
     painter.setBrush(Qt::NoBrush);
@@ -128,7 +128,9 @@ void DrawingArea::drawLine(QPainter& painter,QPen& pen,Element* it){
     commonFunc::offsetPoint(start,xoff,yoff);
     commonFunc::offsetPoint(end,xoff,yoff);
 
-    painter.drawLine(start,end);
+    //手动放大图形，要不太小了看不清
+    int k=3;
+    painter.drawLine(start*k,end*k);
 }
 
 void DrawingArea::drawArc(QPainter &painter,QPen &pen,Element* it){
@@ -143,7 +145,7 @@ void DrawingArea::drawArc(QPainter &painter,QPen &pen,Element* it){
     center=ArcElem->Centre();
     isAcw=ArcElem->Status().isAcw;      //1->逆时针 0->顺时针 -1->直线
 
-    pen.setWidth(3);
+    pen.setWidth(2);
     painter.setPen(pen);
     painter.setRenderHint(QPainter::Antialiasing, true);
     painter.setBrush(Qt::NoBrush);
@@ -160,11 +162,14 @@ void DrawingArea::drawArc(QPainter &painter,QPen &pen,Element* it){
     //乘以一个模为1的复数时，不会导致缩放，只会产生旋转，这样的复数就称为旋转子（rotor）
     //逆时针：*旋转子(cos(θ)+sin(θ)i)   顺时针：*旋转子的共轨复数(cos(θ)-sin(θ)i)
     //默认逆时针角度为正，顺时针为负
+    //若span角为0，说明弧是一个整圆，spanAngle需修正为360°
     ComplexNum c1(startVector.x(),startVector.y());
     ComplexNum c2(endVector.x(),endVector.y());
     ComplexNum rotor=c2/c1;
     spanAngle=(isAcw) ? qAtan2(rotor.B(),rotor.A()):-qAtan2(-rotor.B(),rotor.A());
+    if(!spanAngle) spanAngle=2*PI;
 
+    //计算起始角
     c1.setComplexNumValue(1,0);
     c2.setComplexNumValue(startVector.x(),startVector.y());
     rotor=c2/c1;
@@ -176,8 +181,13 @@ void DrawingArea::drawArc(QPainter &painter,QPen &pen,Element* it){
 
     //最后配置外切的矩形,还需要考虑放大的系数和矩形坐标轴的反转。弧线的半径=向量的长度
     //放大得时候,角度值都不会发送变化,但圆心得位置和半径会变。
+    int k=3;//手动调放大系数
     int r=startVector.manhattanLength()*scale;
-    rectangle.setRect(center.x()-r,-(center.y()+r),2*r,2*r);
+    //按照鼠标拉扯手势对矩形左上角偏移量进行调整
+    QPointF upperLeftPointOfRect=QPointF(center.x()-r,-(center.y()+r));
+    commonFunc::offsetPoint(upperLeftPointOfRect,xoff,yoff);
+
+    rectangle.setRect(k*upperLeftPointOfRect.x(),k*upperLeftPointOfRect.y(),k*2*r,k*2*r);
 
     //由于16个像素相当于1°，所以所求角度还需*16
     painter.drawArc(rectangle, startAngle*16, spanAngle*16);
@@ -223,8 +233,8 @@ void DrawingArea::mousePressEvent(QMouseEvent *event){
 //计算鼠标移动后的坐标与之前按下鼠标的坐标偏移量
 void DrawingArea::mouseMoveEvent(QMouseEvent *event){   
      if(event->buttons() & Qt::LeftButton){
-         xoff=(event->x()- mousePressPos.x());
-         yoff=(event->y()- mousePressPos.y());
+         xoff=(event->x()- mousePressPos.x())/3;
+         yoff=(event->y()- mousePressPos.y())/3;
          update();
      }
 }

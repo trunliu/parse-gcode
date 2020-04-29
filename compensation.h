@@ -2,6 +2,7 @@
 #define COMPENSATION_H
 #include <QObject>
 #include <QVector>
+const double PI=3.1415926;
 
 //转接类型：缩短型、伸长型、插入型
 enum transType{
@@ -43,7 +44,7 @@ private:
     void selectAlgorithm(Element*elem1,Element*elem2,transType trantyp,elemType elemtyp,timeType timetyp);
 
     //计算方向矢量
-    QPointF directionVector(Element*elem);
+    QPointF directionVector(Element*elem,int pos);
 
 private:
     //输入
@@ -53,15 +54,43 @@ private:
     //输出
     QVector<Element*> compensationElemVector;
 
-private://所有得公式函数：这里仅举例得6个 （未完成）
+private:
     void Long_LineLine_Building(Element*elem1,Element*elem2);
-    void Long_LineLine_End(Element*elem1,Element*elem2);
-    void Long_LineLine_Doing(Element*elem1,Element*elem2);
+      void Long_LineLine_End(Element*elem1,Element*elem2);
+      void Long_LineLine_Doing(Element*elem1,Element*elem2);
 
-    void Short_LineLine_Building(Element*elem1,Element*elem2);
-    void Short_LineLine_Doing(Element*elem1,Element*elem2);
-    void Short_LineLine_End(Element*elem1,Element*elem2);
+      void Short_LineLine_Building(Element*elem1,Element*elem2);
+      void Short_LineLine_Doing(Element*elem1,Element*elem2);
+      void Short_LineLine_End(Element*elem1,Element*elem2);
 
+      void Insert_LineLine_Building(Element*elem1,Element*elem2);
+      void Insert_LineLine_End(Element*elem1,Element*elem2);
+      void Insert_LineLine_Doing(Element*elem1,Element*elem2);
+
+      void Short_LineArc_Building(Element*elem1,Element*elem2);
+      void Short_LineArc_Doing(Element*elem1,Element*elem2);
+
+      void Long_LineArc_Building(Element*elem1,Element*elem2);
+      void Long_LineArc_Doing(Element*elem1,Element*elem2);
+
+      void Insert_LineArc_Building(Element*elem1,Element*elem2);
+      void Insert_LineArc_Doing(Element*elem1,Element*elem2);
+
+      void Short_ArcLine_Doing(Element*elem1,Element*elem2);
+      void Short_ArcLine_End(Element*elem1,Element*elem2);
+
+      void Long_ArcLine_Doing(Element*elem1,Element*elem2);
+      void Long_ArcLine_End(Element*elem1,Element*elem2);
+
+      void Insert_ArcLine_Doing(Element*elem1,Element*elem2);
+      void Insert_ArcLine_End(Element*elem1,Element*elem2);
+
+      void Short_ArcArc_Doing(Element*elem1,Element*elem2);
+      void Long_ArcArc_Doing(Element*elem1,Element*elem2);
+      void Insert_ArcArc_Doing(Element*elem1,Element*elem2);
+
+      void Short_ArcArc_Building(Element*elem1,Element*elem2);
+      void Short_ArcArc_End(Element*elem1,Element*elem2);
 
 };
 

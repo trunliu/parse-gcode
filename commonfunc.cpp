@@ -31,6 +31,11 @@ void commonFunc::offsetPoint(QPointF& point,int xoff,int yoff){
     point.ry()+=yoff;
 }
 
+void commonFunc::offsetPoint1(QPointF& point,int xoff,int yoff){
+    point.rx()+=xoff;
+    point.ry()-=yoff;
+}
+
 void commonFunc::radianToAngle(double& num){
     num=num/PI*180;
 }

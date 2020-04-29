@@ -37,6 +37,7 @@ public:
     static void expandPointByScale(QPointF& point,double scale);
     //将坐标值按xoff,yoff进行偏移
     static void offsetPoint(QPointF& point,int xoff,int yoff);
+    static void offsetPoint1(QPointF& point,int xoff,int yoff);
     //弧度转为角度
     static void radianToAngle(double&);
 };
