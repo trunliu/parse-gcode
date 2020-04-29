@@ -5,3 +5,7 @@
 绘图界面
 ===========
 ![绘图界面](https://github.com/liuwentao1992/ParseGCode/blob/master/githubImage/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20200326010512.png)
+
+刀补算法示例
+============
+![刀补算法示例](https://github.com/liuwentao1992/ParseGCode/blob/master/githubImage/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20200414232501.png)
