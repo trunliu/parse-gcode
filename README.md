@@ -1,9 +1,9 @@
 
+* github下载速度太慢，本项目最新进度移至码云上进行更新项目地址（https://gitee.com/liuwentao1234/robot-simulation-software)
+* 本仓库以后只更新readme
+
 针对萌新C ++练手项目简介
 ==================
-* github下载速度太慢，本项目最新进度移至码云上进行更新项目地址（https://gitee.com/liuwentao1234/robot-simulation-software)
-*本仓库只更新readme
-
 ![外观](https://images.gitee.com/uploads/images/2021/0221/100430_0b1c4914_6574042.png "屏幕截图.png")
 
 项目介绍
